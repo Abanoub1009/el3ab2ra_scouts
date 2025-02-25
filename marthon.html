@@ -1,0 +1,465 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Questions</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link href="./style/style.css" rel="stylesheet" />
+    <script src="Scripts/fetchData.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .question {
+            background-color: antiquewhite;
+            padding: 20px;
+            border-radius: 10px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            max-width: 600px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        h1#nameOfCat {
+            color: antiquewhite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6em;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(50, 50, 50, 0.7)); /* Dark gradient background */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+
+        h2#gameTitle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em; /* Increased font size */
+            color: black; /* Text color */
+            background: antiquewhite;
+            padding: 20px; /* More padding for spacing */
+            border-radius: 50%; /* Circular shape */
+            text-align: center;
+            width: 120px; /* Increased size */
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+        }
+
+
+
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            position: absolute;
+            bottom: 20px;
+        }
+
+        .team {
+            background-color: lightgray;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+        }
+
+        .score {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            font-size: 1.5em;
+            padding: 5px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus {
+            background-color: green;
+            color: white;
+        }
+
+        .minus {
+            background-color: red;
+            color: white;
+        }
+
+        #timer {
+            width: 80px;
+            height: 80px;
+            background-color: red; /* Circle color */
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%; /* Makes it a circle */
+            cursor: pointer;
+            user-select: none;
+            /* Positioning it in the top-left corner */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        #btnanswer {
+            position: absolute;
+            top: 140px; /* Moves it below the timer */
+            left: 50%;
+            transform: translateX(-50%); /* Centers it */
+            text-align: center;
+        }
+
+        #showAnswerBtn {
+            background-color: #ff9800; /* Orange color for visibility */
+            color: white;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+            #showAnswerBtn:hover {
+                background-color: #e68900; /* Darker orange */
+                transform: scale(1.1); /* Slight zoom effect */
+            }
+
+        #Panswer {
+            margin-top: 20px;
+            font-size: 2em;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2 id="gameTitle">مارثون</h2> <!-- Top-left title -->
+
+    <div class="container page">
+        <div class="question border">
+            <p id="question">Your question will appear here</p>
+        </div>
+        <h1 id="nameOfCat">فنون</h1>
+    </div>
+
+    <!-- Teams and Scores -->
+    <div class="score-container">
+        <div class="team" id="team1">
+            <h2 id="team1Name">Team 1</h2>
+            <div class="score" id="score1">0</div>
+            <div class="button-container">
+                <button class="plus" onclick="updateScore(1, 10)">+</button>
+                <button class="minus" onclick="updateScore(1, -10)">-</button>
+                <button class="change-bg" onclick="changeDivBackground('team1')" style="background-color:antiquewhite; color:black;">J</button>
+            </div>
+        </div>
+
+        <div class="team" id="team2">
+            <h2 id="team2Name">Team 2</h2>
+            <div class="score" id="score2">0</div>
+            <div class="button-container">
+                <button class="plus" onclick="updateScore(2, 10) ">+</button>
+                <button class="minus" onclick="updateScore(2, -10)">-</button>
+                <button class="change-bg" onclick="changeDivBackground('team2')" style="background-color:antiquewhite; color: black;">J</button>
+            </div>
+        </div>
+    </div>
+    <div id="timer" onclick="startTimer()">20</div>
+    <div id="answer">
+        <div id="btnanswer"></div>
+    </div>
+    <script>
+        // Retrieve the stored data from localStorage
+        const storedData = localStorage.getItem("quizData");
+        const quizData = JSON.parse(storedData);
+        const team1 = quizData.team1;
+        let score1 = quizData.score1;
+        const team2 = quizData.team2;
+        let score2 = quizData.score2;
+        const data = quizData.data;
+        console.log(team1);
+        console.log(score1);
+        //console.log("Question:", data[4].luckyWheel[1].sport[0].question);
+        document.getElementById('team1Name').innerHTML = team1;
+        document.getElementById('team2Name').innerHTML = team2;
+        document.getElementById('score1').innerHTML = score1;
+        document.getElementById('score2').innerHTML = score2;
+        checkScores(score1, score2);
+        function changeDivBackground(divId) {
+
+            let div = document.getElementById(divId);
+            div.style.backgroundColor = div.style.backgroundColor === "blue" ? checkScores(score1, score2) : "blue";
+        }
+
+        // Function to update the background color based on scores
+        function checkScores(score1, score2) {
+            let team1Div = document.getElementById("team1");
+            let team2Div = document.getElementById("team2");
+
+            if (score1 > score2) {
+                team1Div.style.backgroundColor = "green";
+                team2Div.style.backgroundColor = "red";
+            } else if (score2 > score1) {
+                team2Div.style.backgroundColor = "green";
+                team1Div.style.backgroundColor = "red";
+            } else {
+                // If scores are equal, reset both backgrounds
+                team1Div.style.backgroundColor = "";
+                team2Div.style.backgroundColor = "";
+            }
+        }
+
+        // Function to update score
+        function updateScore(team, change) {
+            let scoreElement = document.getElementById("score" + team);
+            let currentScore = parseInt(scoreElement.innerText);
+            let newScore = Math.max(0, currentScore + change); // Ensure score does not go below 0
+
+            // Update the correct score variable
+            if (team == 1) {
+                score1 = newScore;
+            } else {
+                score2 = newScore;
+            }
+
+            // Update the displayed score
+            scoreElement.innerText = newScore;
+
+            // Check and update background colors based on scores
+            checkScores(score1, score2);
+        }
+        const mainindex = 1;
+        let catindex = 0, qindex = 0;
+        async function getData(type, mainindex, catindex, qindex) {
+            let dataText = "";
+            if (type == 0) {
+                try {
+                    switch (catindex) {
+                        case 0:
+                            dataText = data[mainindex]?.marathon[catindex]?.art?.question || "";
+                            console.log(dataText);
+                            break;
+                        case 1:
+                            dataText = data[mainindex]?.marathon[catindex]?.sport?.question || "";
+                            break;
+                        case 2:
+                            dataText = data[mainindex]?.marathon[catindex]?.IQ?.question || "";
+                            break;
+                        case 3:
+                            dataText = data[mainindex]?.marathon[catindex]?.scouts?.question || "";
+                            break;
+                        default:
+                            // Remove the element safely
+                            var element = document.getElementById('nameOfCat');
+                            if (element) {
+                                element.remove();
+                            }
+
+                            createRedirectButton(data);
+
+
+
+                    }
+                } catch (error) {
+                    console.error("Error retrieving question:", error);
+                    dataText = "Error retrieving question.";
+                }
+            }
+            else {
+                try {
+                    switch (catindex) {
+                        case 0:
+                            dataText = data[mainindex]?.marathon[catindex]?.art?.answer || "";
+                            break;
+                        case 1:
+                            dataText = data[mainindex]?.marathon[catindex]?.sport?.answer || "";
+                            break;
+                        case 2:
+                            dataText = data[mainindex]?.marathon[catindex]?.IQ?.answer || "";
+                            break;
+                        case 3:
+                            dataText = data[mainindex]?.marathon[catindex]?.scouts?.answer || "";
+                            break;
+                        default:
+                            dataText = "";
+
+                    }
+                } catch (error) {
+                    console.error("Error retrieving question:", error);
+                    dataText = "Error retrieving question.";
+                }
+            }
+            if (qindex == 1) {
+                dataText = "";
+            }
+            return dataText;
+        }
+        var h1 = document.getElementById('nameOfCat');
+        async function showQuestion() {
+            const question = await getData(0, mainindex, catindex, qindex);
+            document.getElementById('question').innerText = question;
+            if (question == "") {
+                if (catindex + 1 == 1)
+                    h1.innerHTML = "رياضة";
+                else if (catindex + 1 == 2)
+                    h1.innerHTML = "قدرات ذهنية";
+                else if (catindex + 1 == 3)
+                    h1.innerHTML = "كشافة";
+            }
+        }
+        function redirectToMarathon(data) {
+            localStorage.setItem("quizData", JSON.stringify({
+                team1, score1, team2, score2, data
+            }));
+
+            // Redirect to the next page
+            window.location.href = "nishan.html";
+        }
+
+        // Function to create and add a button to trigger redirection
+        function createRedirectButton(data) {
+            let button = document.createElement("button");
+            button.textContent = "Go to nishan";
+            button.style.display = "block";
+            button.style.marginTop = "10px";
+            button.onclick = function () {
+                redirectToMarathon(data);
+            };
+
+            document.body.appendChild(button);
+        }
+        document.addEventListener('keydown', (event) => {
+            if (event.key === "ArrowRight") {
+                if (document.getElementById('Panswer')) {
+                    document.getElementById('Panswer').remove();
+                }
+                resetTimer();
+                if (qindex <= 0) {
+                    qindex++; // Move to next question in the same category
+                } else {
+                    qindex = 0; // Reset question index
+                    if (catindex < 4) {
+                        catindex++; // Move to next category
+                    }
+                }
+            }
+
+            if (event.key === "ArrowLeft") {
+                resetTimer();
+                if (qindex > 0) {
+                    qindex--; // Move to previous question in the same category
+                } else if (catindex > 0) {
+                    catindex--; // Move to previous category
+                    qindex = 1; // Move to the last question of the previous category
+                }
+            }
+
+            showQuestion();
+        });
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Retrieve team names and set them
+
+        document.getElementById("team1Name").innerText = team1;
+        document.getElementById("team2Name").innerText = team2;
+
+        console.log("Team 1:", team1); // Debugging: check if team names are retrieved
+        console.log("Team 2:", team2);
+
+
+        //document.addEventListener("DOMContentLoaded", showQuestion);
+
+        let timer;
+        let timeLeft = 20;
+        let timerRunning = false; // To check if timer is running
+
+        function updateTimerDisplay() {
+            document.getElementById("timer").innerText = timeLeft;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 20;
+            timerRunning = false;
+            updateTimerDisplay();
+        }
+
+        // Initialize Display
+        updateTimerDisplay();
+        function startTimer() {
+            if (timerRunning) {
+                clearInterval(timer); // Stop the timer
+                timerRunning = false;
+                showAnswerButton();
+            } else {
+                timerRunning = true;
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timer);
+                        timerRunning = false;
+                        showAnswerButton(); // Call function to show the button when time runs out
+                    }
+                }, 1000);
+            }
+        }
+
+        function showAnswerButton() {
+            // Prevent duplicate buttons
+            if (!document.getElementById("showAnswerBtn")) {
+                var btn = document.createElement('button');
+                btn.id = "showAnswerBtn"; // Assign an ID to prevent duplicates
+                btn.textContent = 'Show Answer'; // Correctly setting button text
+                btn.onclick = function () {
+                    document.getElementById('showAnswerBtn').remove();
+                    showAnswer(); // Call the function to show the answer
+                    // Remove the button after clicking
+                };
+                document.getElementById('btnanswer').appendChild(btn);
+            }
+        }
+        async function showAnswer() {
+            const answer = await getData(1, mainindex, catindex, qindex);
+            var p = document.createElement('p');
+            p.innerHTML = answer;
+            p.id = "Panswer";
+            document.getElementById('btnanswer').appendChild(p);
+        }
+    </script>
+</body>
+</html>

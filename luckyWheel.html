@@ -1,0 +1,389 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عجلة الحظ</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link href="./style/style.css" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wheel-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 5px solid #fff;
+            border-radius: 50%;
+            background-color: white;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .arrow {
+            position: absolute;
+            bottom: -45px; /* Move arrow to the bottom */
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg); /* Flip it */
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 40px solid yellow; /* Flip border direction */
+            border-bottom: none; /* Remove old border */
+            filter: drop-shadow(0px -4px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .buttons-container {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between buttons */
+        }
+
+        .left-buttons-container {
+            position: absolute;
+            left: 50px; /* Align buttons on the left */
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .btnn {
+            padding: 15px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #007bff; /* Blue buttons */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background-color: #ff9800;
+            transform: scale(1.08);
+        }
+
+        .kashafa-button {
+            position: absolute;
+            top: 20px; /* Moves the button to the top */
+            left: 46.8%;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #007bff; /* Orange color */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+            .kashafa-button:hover {
+                background-color: #ff9800;
+                transform: scale(1.08);
+            }
+
+        .spin {
+            position: absolute;
+            top: 115%; /* يجعل الزر تحت العجلة */
+            left: 33.5%;
+            background-color: antiquewhite;
+            color: black;
+            font-size: 1rem;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+        }
+
+            .spin:hover {
+                background-color: #ff9800;
+            }
+
+
+        .theWheele {
+            position: absolute;
+            top: 10%;
+        }
+
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            position: absolute;
+            bottom: 20px;
+        }
+
+        .team {
+            background-color: lightgray;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+        }
+
+        .score {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn2 {
+            font-size: 1.5em;
+            padding: 5px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .plus {
+            background-color: green;
+            color: white;
+        }
+
+        .minus {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-container">
+        <div class="team" id="team1">
+            <h2 id="team1Name">Team 1</h2>
+            <div class="score" id="score1">0</div>
+            <div class="button-container">
+                <button class="plus btn2" onclick="updateScore(1, 10)">+</button>
+                <button class="minus btn2" onclick="updateScore(1, -10)">-</button>
+                <button class="change-bg btn2" onclick="changeDivBackground('team1')" style="background-color:antiquewhite; color:black;">J</button>
+            </div>
+        </div>
+
+        <div class="team" id="team2">
+            <h2 id="team2Name">Team 2</h2>
+            <div class="score" id="score2">0</div>
+            <div class="button-container">
+                <button class="plus btn2" onclick="updateScore(2, 10) ">+</button>
+                <button class="minus btn2" onclick="updateScore(2, -10)">-</button>
+                <button class="change-bg btn2" onclick="changeDivBackground('team2')" style="background-color:antiquewhite; color: black;">J</button>
+            </div>
+        </div>
+    </div>
+    <div class="theWheele">
+        <h2>عجلة الحظ 🎡</h2>
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        </div>
+
+        <button id="spinButton" class="spin btnn">Spin</button>
+    </div>
+    <button id="ScoutsButton" class="kashafa-button btnn">الكشافة</button>
+    <div class="buttons-container">
+        <button id="IqButton" class="btnn">القدرات الذهنية</button>
+
+        <button id="sportButton" class="btnn">الرياضة</button>
+    </div>
+
+    <div class="left-buttons-container">
+        <button id="SButton" class="btnn">العلوم</button>
+        <button id="GButton" class="btnn">الجغرافية والتاريخ</button>
+    </div>
+
+
+    <script>
+        const storedData = localStorage.getItem("quizData");
+        const quizData = JSON.parse(storedData);
+        const team1 = quizData.team1;
+        let score1 = quizData.score1;
+        const team2 = quizData.team2;
+        let score2 = quizData.score2;
+        const data = quizData.data;
+        console.log("Data:", data);
+        console.log("LuckyWheel:", data[4]?.luckyWheel);
+        console.log("Category:", data[4]?.luckyWheel?.[1]);
+        console.log("Sport Array:", data[4]?.luckyWheel?.[1]?.sport);
+        console.log("First Question:", data[4]?.luckyWheel?.[1]?.sport?.[0]?.question);
+        console.log(team1);
+        console.log(score1);
+        document.getElementById('team1Name').innerHTML = team1;
+        document.getElementById('team2Name').innerHTML = team2;
+        document.getElementById('score1').innerHTML = score1;
+        document.getElementById('score2').innerHTML = score2;
+        checkScores(score1, score2);
+        const canvas = document.getElementById("wheelCanvas");
+        const ctx = canvas.getContext("2d");
+        const spinButton = document.getElementById("spinButton");
+        const wheelSections = ["القدرات الذهنية", "العلوم", "الكشافة", "جغرافيا و تاريخ", "الرياضة"];
+        let currentRotation = 0;
+
+        function drawWheel() {
+            const numSections = wheelSections.length;
+            const arcSize = (2 * Math.PI) / numSections;
+            const colors = ["#FFDDC1", "#FFABAB", "#FFC3A0", "#D5AAFF", "#85E3FF"];
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < numSections; i++) {
+                const startAngle = i * arcSize;
+                const endAngle = startAngle + arcSize;
+
+                ctx.beginPath();
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 150, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                ctx.strokeStyle = "black";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(startAngle + arcSize / 2);
+                ctx.fillStyle = "black";
+                ctx.font = "bold 16px Arial";
+                ctx.textAlign = "right";
+                ctx.fillText(wheelSections[i], 120, 5);
+                ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            let randomDegree = 1440 + Math.floor(Math.random() * 360);
+            currentRotation += randomDegree;
+            canvas.style.transition = "transform 3s ease-out";
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+        }
+
+        spinButton.addEventListener("click", () => {
+            canvas.style.transition = "none";
+            canvas.style.transform = "rotate(0deg)";
+            setTimeout(() => {
+                spinWheel();
+            }, 10);
+        });
+        let qindexS = 0;
+        let qindexSe = 0;
+        let qindexSc = 0;
+        let qindexG = 0;
+        let qindexI = 0;
+        drawWheel();
+        document.getElementById("sportButton").addEventListener("click", function () {
+            const question = data[4].luckyWheel[1].sport[qindexS].question;
+            const answer = data[4].luckyWheel[1].sport[qindexS].answer;  // Example Answer
+            qindexS++;
+            localStorage.setItem("question", question); // Store question
+            localStorage.setItem("answer", answer); // Store answer
+
+            window.open("sport.html", "_blank"); // Opens sport.html in a new tab
+        });
+        document.getElementById("IqButton").addEventListener("click", function () {
+            const question = data[4].luckyWheel[4].IQ[qindexI].question;
+            const answer = data[4].luckyWheel[4].IQ[qindexI].answer;  // Example Answer
+            qindexI++;
+            localStorage.setItem("question", question); // Store question
+            localStorage.setItem("answer", answer); // Store answer
+
+            window.open("iq.html", "_blank"); // Opens sport.html in a new tab
+        });
+        document.getElementById("ScoutsButton").addEventListener("click", function () {
+            const question = data[4].luckyWheel[2].scouts[qindexSc].question;
+            const answer = data[4].luckyWheel[2].scouts[qindexSc].answer;  // Example Answer
+            qindexSc++;
+            localStorage.setItem("question", question); // Store question
+            localStorage.setItem("answer", answer); // Store answer
+
+            window.open("scouts.html", "_blank"); // Opens sport.html in a new tab
+        });
+        document.getElementById("SButton").addEventListener("click", function () {
+            const question = data[4].luckyWheel[3].sciences[qindexSe].question;
+            const answer = data[4].luckyWheel[3].sciences[qindexSe].answer;  // Example Answer
+            qindexSe++;
+            localStorage.setItem("question", question); // Store question
+            localStorage.setItem("answer", answer); // Store answer
+
+            window.open("s.html", "_blank"); // Opens sport.html in a new tab
+        });
+        document.getElementById("GButton").addEventListener("click", function () {
+            const question = data[4].luckyWheel[0].GeographyHistory[qindexG].question;
+            const answer = data[4].luckyWheel[0].GeographyHistory[qindexG].answer;  // Example Answer
+            qindexG++;
+            localStorage.setItem("question", question); // Store question
+            localStorage.setItem("answer", answer); // Store answer
+
+            window.open("g.html", "_blank"); // Opens sport.html in a new tab
+        });
+
+
+        function changeDivBackground(divId) {
+
+            let div = document.getElementById(divId);
+            div.style.backgroundColor = div.style.backgroundColor === "blue" ? checkScores(score1, score2) : "blue";
+        }
+
+        // Function to update the background color based on scores
+        function checkScores(score1, score2) {
+            let team1Div = document.getElementById("team1");
+            let team2Div = document.getElementById("team2");
+
+            if (score1 > score2) {
+                team1Div.style.backgroundColor = "green";
+                team2Div.style.backgroundColor = "red";
+            } else if (score2 > score1) {
+                team2Div.style.backgroundColor = "green";
+                team1Div.style.backgroundColor = "red";
+            } else {
+                // If scores are equal, reset both backgrounds
+                team1Div.style.backgroundColor = "";
+                team2Div.style.backgroundColor = "";
+            }
+        }
+
+        // Function to update score
+        function updateScore(team, change) {
+            let scoreElement = document.getElementById("score" + team);
+            let currentScore = parseInt(scoreElement.innerText);
+            let newScore = Math.max(0, currentScore + change); // Ensure score does not go below 0
+
+            // Update the correct score variable
+            if (team == 1) {
+                score1 = newScore;
+            } else {
+                score2 = newScore;
+            }
+
+            // Update the displayed score
+            scoreElement.innerText = newScore;
+
+            // Check and update background colors based on scores
+            checkScores(score1, score2);
+        }
+    </script>
+</body>
+</html>

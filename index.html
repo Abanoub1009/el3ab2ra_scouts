@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Welcome</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .head {
+            color: aliceblue;
+            text-align: center;
+        }
+
+        body {
+            background-image: url('./images/St.George Scouts & Guides.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .body {
+            text-align: center;
+            float: left;
+            width: 50%;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container main">
+        <h1 class="head">Welcome</h1>
+
+        <!-- View Scores Button -->
+        <div class="body">
+            <button class="btn btn-dark" onclick="showScores()">View Score</button>
+        </div>
+
+        <!-- Begin Match Button (Opens Modal) -->
+        <div class="body">
+            <button class="btn btn-dark" onclick="openTeamSelection()">Begin Match</button>
+        </div>
+
+        <!-- Team Selection Modal -->
+        <div id="teamModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Select Teams</h2>
+
+                <label for="team1">Team 1:</label>
+                <select id="team1"></select>
+
+                <label for="team2">Team 2:</label>
+                <select id="team2"></select>
+
+                <br><br>
+                <button class="btn btn-success" onclick="startMatch()">Start The Match</button>
+                <button class="btn btn-danger" onclick="closeTeamSelection()">Cancel</button>
+            </div>
+        </div>
+
+        <div class="body">
+            <div id="Scores" class="table-striped"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTeams() {
+            try {
+                const response = await fetch("Db/teams.json"); // Load JSON file
+                const teams = await response.json();
+
+                const team1Dropdown = document.getElementById("team1");
+                const team2Dropdown = document.getElementById("team2");
+
+                team1Dropdown.innerHTML = "";
+                team2Dropdown.innerHTML = "";
+
+                teams.forEach(team => {
+                    let option1 = document.createElement("option");
+                    let option2 = document.createElement("option");
+
+                    option1.value = team.TeamName;
+                    option1.textContent = team.TeamName;
+                    option2.value = team.TeamName;
+                    option2.textContent = team.TeamName;
+
+                    team1Dropdown.appendChild(option1);
+                    team2Dropdown.appendChild(option2);
+                });
+            } catch (error) {
+                console.error("Error loading teams:", error);
+            }
+        }
+
+        function openTeamSelection() {
+            loadTeams(); // Load teams before showing the modal
+            document.getElementById("teamModal").style.display = "block";
+        }
+
+        function closeTeamSelection() {
+            document.getElementById("teamModal").style.display = "none";
+        }
+
+        function startMatch() {
+            var team1 = document.getElementById("team1").value;
+            var team2 = document.getElementById("team2").value;
+
+            if (team1 === team2) {
+                alert("Please select two different teams.");
+                return;
+            }
+
+            window.location.href = `sd_rd.html?team1=${encodeURIComponent(team1)}&team2=${encodeURIComponent(team2)}`;
+        }
+        async function fetchData() {
+            try {
+                const response = await fetch("Db/teams.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        var tb = document.createElement('table');
+        var tbody = document.createElement('tbody');
+
+        async function consumeData() {
+            var data = await fetchData();
+            var head = document.createElement('thead');
+            var hrow = document.createElement('tr');
+            var hh1 = document.createElement('th');
+            hh1.innerHTML = 'Team Name';
+            var hh2 = document.createElement('th');
+            hh2.innerHTML = 'Points';
+            var hh3 = document.createElement('th');
+            hh3.innerHTML = 'Score';
+            hrow.appendChild(hh1);
+            hrow.appendChild(hh2);
+            hrow.appendChild(hh3);
+            head.appendChild(hrow);
+            tb.appendChild(head);
+            for (var i in data) {
+                var row = document.createElement('tr');
+                var rowData1 = document.createElement('td');
+                rowData1.innerHTML = data[i].TeamName;
+                console.log(data[i].TeamName);
+                var rowData2 = document.createElement('td');
+                rowData2.innerHTML = data[i].points;
+                var rowData3 = document.createElement('td');
+                rowData3.innerHTML = data[i].score;
+                row.appendChild(rowData1);
+                row.appendChild(rowData2);
+                row.appendChild(rowData3);
+                tbody.appendChild(row);
+            }
+            tb.appendChild(tbody);
+            tb.className = 'table table-hover table-striped';
+        }
+        async function showScores() {
+            await consumeData();
+            document.getElementById('Scores').appendChild(tb);
+        }
+    </script>
+</body>
+</html>

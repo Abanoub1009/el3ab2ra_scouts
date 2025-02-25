@@ -1,0 +1,14 @@
+﻿body {
+    background-image: url('../images/st.george_scouts_guides_blurred.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    position: relative;
+}

@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Questions</title>
+    <link href="./style/style.css" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+
+        .question {
+            background-color: antiquewhite;
+            padding: 20px;
+            border-radius: 10px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            max-width: 600px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        h1#nameOfCat {
+            color: antiquewhite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6em;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(50, 50, 50, 0.7)); /* Dark gradient background */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+
+        h2#gameTitle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em; /* Increased font size */
+            color: black; /* Text color */
+            background: antiquewhite;
+            padding: 20px; /* More padding for spacing */
+            border-radius: 50%; /* Circular shape */
+            text-align: center;
+            width: 120px; /* Increased size */
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+        }
+
+
+
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            position: absolute;
+            bottom: 20px;
+        }
+
+        .team {
+            background-color: lightgray;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+        }
+
+        .score {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            font-size: 1.5em;
+            padding: 5px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus {
+            background-color: green;
+            color: white;
+        }
+
+        .minus {
+            background-color: red;
+            color: white;
+        }
+
+        #timer {
+            width: 80px;
+            height: 80px;
+            background-color: red; /* Circle color */
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%; /* Makes it a circle */
+            cursor: pointer;
+            user-select: none;
+            /* Positioning it in the top-left corner */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        #btnanswer {
+            position: absolute;
+            top: 140px; /* Moves it below the timer */
+            left: 50%;
+            transform: translateX(-50%); /* Centers it */
+            text-align: center;
+        }
+
+        #showAnswerBtn {
+            background-color: #ff9800; /* Orange color for visibility */
+            color: white;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+            #showAnswerBtn:hover {
+                background-color: #e68900; /* Darker orange */
+                transform: scale(1.1); /* Slight zoom effect */
+            }
+
+        #Panswer {
+            margin-top: 20px;
+            font-size: 2em;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        #showQuestionBtn {
+            position: absolute;
+            top: 400px; /* Adjust as needed */
+            left: 44%;
+            background-color: #007bff;
+            color: white;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+            #showQuestionBtn:hover {
+                background-color: #0056b3;
+                transform: scale(1.1);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container page">
+        <div class="question border">
+            <p id="question">Your question will appear here</p>
+        </div>
+    </div>
+    <div id="timer" onclick="startTimer()">20</div>
+    <div id="answer">
+        <div id="btnanswer"></div>
+    </div>
+    <button id="showQuestionBtn" onclick="showQuestion();">Show Question</button>
+    <script>
+        let data_question = ""; // Initialize as empty string
+        let data_answer = "";
+
+        document.addEventListener("DOMContentLoaded", function () {
+            data_question = localStorage.getItem("question") || "No question found!";
+            data_answer = localStorage.getItem("answer") || "No answer found!";
+        });
+
+        function showQuestion() {
+            document.getElementById('question').innerText = data_question;
+            document.getElementById('showQuestionBtn').remove();
+        }
+
+        let timer;
+        let timeLeft = 20;
+        let timerRunning = false;
+
+        function updateTimerDisplay() {
+            document.getElementById("timer").innerText = timeLeft;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 20;
+            timerRunning = false;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (timerRunning) {
+                clearInterval(timer);
+                timerRunning = false;
+                showAnswerButton();
+            } else {
+                timerRunning = true;
+                timer = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timer);
+                        timerRunning = false;
+                        showAnswerButton();
+                    }
+                }, 1000);
+            }
+        }
+
+        function showAnswerButton() {
+            if (!document.getElementById("showAnswerBtn")) {
+                var btn = document.createElement('button');
+                btn.id = "showAnswerBtn";
+                btn.textContent = 'Show Answer';
+                btn.onclick = function () {
+                    document.getElementById('showAnswerBtn').remove();
+                    showAnswer();
+                };
+                document.getElementById('btnanswer').appendChild(btn);
+            }
+        }
+
+        function showAnswer() {
+            var p = document.createElement('p');
+            p.innerHTML = data_answer;
+            p.id = "Panswer";
+            document.getElementById('btnanswer').appendChild(p);
+        }
+    </script>
+
+</body>
+</html>
