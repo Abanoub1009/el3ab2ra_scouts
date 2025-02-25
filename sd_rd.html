@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
         }
 
 
+<<<<<<< HEAD
     ﻿body {
         background-image: url('./images/st.george_scouts_guides_blurred.png');
         background-size: cover;
@@ -27,6 +29,23 @@
         font-family: Arial, sans-serif;
         position: relative;
     }
+=======
+        body {
+            background-image: url('./images/St.George_Scouts_Guides_Blurred.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+>>>>>>> c4c867c (Initial commit)
         .question {
             background-color: antiquewhite;
             padding: 20px;
@@ -48,7 +67,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 6em;
-            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(50, 50, 50, 0.7)); /* Dark gradient background */
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(50, 50, 50, 0.7));
+            /* Dark gradient background */
             padding: 20px;
             border-radius: 10px;
         }
@@ -58,18 +78,24 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            font-size: 2em; /* Increased font size */
-            color: black; /* Text color */
+            font-size: 2em;
+            /* Increased font size */
+            color: black;
+            /* Text color */
             background: antiquewhite;
-            padding: 20px; /* More padding for spacing */
-            border-radius: 50%; /* Circular shape */
+            padding: 20px;
+            /* More padding for spacing */
+            border-radius: 50%;
+            /* Circular shape */
             text-align: center;
-            width: 120px; /* Increased size */
+            width: 120px;
+            /* Increased size */
             height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            /* Stronger shadow */
         }
 
 
@@ -122,14 +148,16 @@
         #timer {
             width: 80px;
             height: 80px;
-            background-color: red; /* Circle color */
+            background-color: red;
+            /* Circle color */
             color: white;
             font-size: 2em;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%; /* Makes it a circle */
+            border-radius: 50%;
+            /* Makes it a circle */
             cursor: pointer;
             user-select: none;
             /* Positioning it in the top-left corner */
@@ -140,14 +168,17 @@
 
         #btnanswer {
             position: absolute;
-            top: 140px; /* Moves it below the timer */
+            top: 140px;
+            /* Moves it below the timer */
             left: 50%;
-            transform: translateX(-50%); /* Centers it */
+            transform: translateX(-50%);
+            /* Centers it */
             text-align: center;
         }
 
         #showAnswerBtn {
-            background-color: #ff9800; /* Orange color for visibility */
+            background-color: #ff9800;
+            /* Orange color for visibility */
             color: white;
             font-size: 1.5em;
             padding: 10px 20px;
@@ -157,10 +188,12 @@
             transition: background 0.3s ease, transform 0.2s ease;
         }
 
-            #showAnswerBtn:hover {
-                background-color: #e68900; /* Darker orange */
-                transform: scale(1.1); /* Slight zoom effect */
-            }
+        #showAnswerBtn:hover {
+            background-color: #e68900;
+            /* Darker orange */
+            transform: scale(1.1);
+            /* Slight zoom effect */
+        }
 
         #Panswer {
             margin-top: 20px;
@@ -174,6 +207,7 @@
         }
     </style>
 </head>
+
 <body>
     <h2 id="gameTitle">صد رد</h2> <!-- Top-left title -->
 
@@ -192,7 +226,8 @@
             <div class="button-container">
                 <button class="plus" onclick="updateScore(1, 10)">+</button>
                 <button class="minus" onclick="updateScore(1, -10)">-</button>
-                <button class="change-bg" onclick="changeDivBackground('team1')" style="background-color:antiquewhite; color:black;">J</button>
+                <button class="change-bg" onclick="changeDivBackground('team1')"
+                    style="background-color:antiquewhite; color:black;">J</button>
             </div>
         </div>
 
@@ -202,7 +237,8 @@
             <div class="button-container">
                 <button class="plus" onclick="updateScore(2, 10) ">+</button>
                 <button class="minus" onclick="updateScore(2, -10)">-</button>
-                <button class="change-bg" onclick="changeDivBackground('team2')" style="background-color:antiquewhite; color: black;">J</button>
+                <button class="change-bg" onclick="changeDivBackground('team2')"
+                    style="background-color:antiquewhite; color: black;">J</button>
             </div>
         </div>
     </div>
@@ -304,7 +340,7 @@
                             if (element) {
                                 element.remove();
                             }
-                            createRedirectButton( data);
+                            createRedirectButton(data);
                     }
                 } catch (error) {
                     console.error("Error retrieving question:", error);
@@ -337,7 +373,7 @@
         }
 
         // Function to store data in localStorage and navigate to the next page
-        function redirectToMarathon( data) {
+        function redirectToMarathon(data) {
             localStorage.setItem("quizData", JSON.stringify({
                 team1, score1, team2, score2, data
             }));
@@ -353,7 +389,7 @@
             button.style.display = "block";
             button.style.marginTop = "10px";
             button.onclick = function () {
-                redirectToMarathon( data);
+                redirectToMarathon(data);
             };
 
             document.body.appendChild(button);
@@ -481,4 +517,5 @@
         }
     </script>
 </body>
+
 </html>
